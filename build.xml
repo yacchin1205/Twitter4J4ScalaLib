@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- build file for Twitter4J4Scala -->
+<project basedir="." default="build" name="twitter4j4scala">
+	<property environment="env" />
+	<property name="ECLIPSE_HOME" value="../../../Program Files/eclipse" />
+	<property name="debuglevel" value="source,lines,vars" />
+
+	<!-- jar properties -->
+	<property name="distdir" value="dist" />
+	<property name="jarname" value="${ant.project.name}.jar" />
+
+	<property name="target" value="1.6" />
+	<property name="source" value="1.6" />
+	<path id="twitter4j4scala.classpath">
+		<pathelement location="bin" />
+		<pathelement location="lib/twitter4j-core-2.2.4.jar" />
+		<pathelement location="lib/slf4j-api-1.6.1.jar" />
+		<pathelement location="lib/slf4j-jdk14-1.6.1.jar" />
+	</path>
+	<target name="init">
+		<mkdir dir="${distdir}" />
+		<mkdir dir="bin" />
+		<copy includeemptydirs="false" todir="bin">
+			<fileset dir="src">
+				<exclude name="**/*.launch" />
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+	<target name="clean">
+		<delete dir="bin" />
+	</target>
+	<target depends="clean" name="cleanall" />
+
+	<!-- create the jar file -->
+	<target depends="build-subprojects,build-project" name="build">
+		<jar jarfile="${distdir}/${jarname}">
+			<fileset dir="bin">
+				<include name="**" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="build-subprojects" />
+	<target depends="init" name="build-project">
+		<echo message="${ant.project.name}: ${ant.file}" />
+		<javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+			<src path="src" />
+			<classpath refid="twitter4j4scala.classpath" />
+		</javac>
+	</target>
+	<target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects" />
+	<target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+		<copy todir="${ant.library.dir}">
+			<fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar" />
+		</copy>
+		<unzip dest="${ant.library.dir}">
+			<patternset includes="jdtCompilerAdapter.jar" />
+			<fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar" />
+		</unzip>
+	</target>
+	<target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter" />
+		<antcall target="build" />
+	</target>
+</project>
